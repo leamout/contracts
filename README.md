@@ -1,6 +1,6 @@
-# Leamout SDK
+# Leamout Contracts
 
-Shared SDK and extension contracts for Leamout runtimes, AI providers, carriers, and integrations.
+Shared extension contracts for Leamout runtimes, AI providers, carriers, and integrations.
 
 ## AI provider contracts
 
@@ -18,7 +18,7 @@ A vendor may implement more than one role by exposing a separate provider implem
 ```go
 package example
 
-import "github.com/leamout/sdk/ai"
+import "github.com/leamout/contracts/ai"
 
 type Provider struct{}
 
@@ -40,7 +40,7 @@ Adapters may additionally implement `ai.ConfigValidator` to validate provider-sp
 
 The shared audio contract supports PCM16 little-endian plus G.711 mu-law and A-law so speech adapters can work with both AI-native and telephony-native audio paths.
 
-The SDK intentionally contains no vendor clients, credentials storage, runtime orchestration, or provider registry. Those concerns belong to `leamout/ai-providers` and the Leamout runtime.
+The contracts module intentionally contains no vendor clients, credential storage, runtime orchestration, or provider registry. Those concerns belong to `leamout/ai-providers` and the Leamout runtime.
 
 ## License
 
