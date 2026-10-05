@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -75,8 +76,12 @@ func (d Descriptor) Supports(capability Capability) bool {
 	return false
 }
 
-// Runtime contains the tenant-scoped secret and provider-specific immutable
-// configuration resolved before a provider session starts.
+// Runtime contains the tenant-scoped opaque credential and provider-specific
+// immutable configuration resolved before a provider session starts.
+//
+// Credential is intentionally opaque to the SDK. An adapter may interpret it
+// as an API key, token, service-account document, or another provider-specific
+// secret representation. Runtime values must never be persisted by adapters.
 type Runtime struct {
 	Credential string          `json:"-"`
 	Config     json.RawMessage `json:"config,omitempty"`
@@ -85,4 +90,17 @@ type Runtime struct {
 // Provider is the common contract implemented by every adapter.
 type Provider interface {
 	Descriptor() Descriptor
+}
+
+// ConfigValidator is an optional provider contract for validating an adapter's
+// provider-specific configuration before a runtime session is started.
+type ConfigValidator interface {
+	ValidateConfig(json.RawMessage) error
+}
+
+// CredentialVerifier is an optional provider contract for checking whether an
+// opaque credential can authenticate with the upstream provider. Verification
+// must not persist or return the supplied credential.
+type CredentialVerifier interface {
+	VerifyCredential(context.Context, string) error
 }
