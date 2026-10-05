@@ -6,16 +6,43 @@ import (
 )
 
 func TestAudioFrameDuration(t *testing.T) {
-	frame := AudioFrame{
-		Data: make([]byte, 640),
-		Format: AudioFormat{
-			Encoding:     AudioEncodingPCM16LE,
-			SampleRateHz: 16000,
-			Channels:     1,
+	tests := []struct {
+		name   string
+		frame  AudioFrame
+		want   time.Duration
+	}{
+		{
+			name: "pcm16 16kHz mono",
+			frame: AudioFrame{
+				Data: make([]byte, 640),
+				Format: AudioFormat{
+					Encoding:     AudioEncodingPCM16LE,
+					SampleRateHz: 16000,
+					Channels:     1,
+				},
+			},
+			want: 20 * time.Millisecond,
+		},
+		{
+			name: "mulaw 8kHz mono",
+			frame: AudioFrame{
+				Data: make([]byte, 160),
+				Format: AudioFormat{
+					Encoding:     AudioEncodingMuLaw,
+					SampleRateHz: 8000,
+					Channels:     1,
+				},
+			},
+			want: 20 * time.Millisecond,
 		},
 	}
-	if got, want := frame.Duration(), 20*time.Millisecond; got != want {
-		t.Fatalf("Duration() = %v, want %v", got, want)
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.frame.Duration(); got != tt.want {
+				t.Fatalf("Duration() = %v, want %v", got, tt.want)
+			}
+		})
 	}
 }
 
