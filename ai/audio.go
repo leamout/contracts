@@ -10,6 +10,8 @@ type AudioEncoding string
 
 const (
 	AudioEncodingPCM16LE AudioEncoding = "pcm_s16le"
+	AudioEncodingMuLaw   AudioEncoding = "mulaw"
+	AudioEncodingALaw    AudioEncoding = "alaw"
 )
 
 // AudioFormat describes audio exchanged with speech providers.
@@ -21,10 +23,11 @@ type AudioFormat struct {
 
 // Validate checks format invariants shared by provider adapters.
 func (f AudioFormat) Validate() error {
-	if f.Encoding == "" {
+	switch f.Encoding {
+	case AudioEncodingPCM16LE, AudioEncodingMuLaw, AudioEncodingALaw:
+	case "":
 		return fmt.Errorf("audio encoding is required")
-	}
-	if f.Encoding != AudioEncodingPCM16LE {
+	default:
 		return fmt.Errorf("unsupported audio encoding %q", f.Encoding)
 	}
 	if f.SampleRateHz <= 0 {
@@ -57,11 +60,22 @@ func (f AudioFrame) Validate() error {
 	return nil
 }
 
-// Duration returns the duration represented by an uncompressed PCM16 frame.
+// Duration returns the duration represented by an uncompressed PCM16 or G.711 frame.
 func (f AudioFrame) Duration() time.Duration {
-	if f.Format.Encoding != AudioEncodingPCM16LE || f.Format.SampleRateHz <= 0 || f.Format.Channels <= 0 || len(f.Data) == 0 {
+	if f.Format.SampleRateHz <= 0 || f.Format.Channels <= 0 || len(f.Data) == 0 {
 		return 0
 	}
-	samples := len(f.Data) / (2 * f.Format.Channels)
+
+	bytesPerSample := 0
+	switch f.Format.Encoding {
+	case AudioEncodingPCM16LE:
+		bytesPerSample = 2
+	case AudioEncodingMuLaw, AudioEncodingALaw:
+		bytesPerSample = 1
+	default:
+		return 0
+	}
+
+	samples := len(f.Data) / (bytesPerSample * f.Format.Channels)
 	return time.Duration(samples) * time.Second / time.Duration(f.Format.SampleRateHz)
 }
