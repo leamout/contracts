@@ -34,4 +34,14 @@ func (Provider) Descriptor() ai.Descriptor {
 }
 ```
 
+`ai.Runtime.Credential` is deliberately opaque. Provider adapters may interpret it as an API key, bearer token, service-account document, or another provider-specific secret representation. Provider-specific settings stay in `ai.Runtime.Config`.
+
+Adapters may additionally implement `ai.ConfigValidator` to validate provider-specific configuration and `ai.CredentialVerifier` to verify upstream authentication without moving vendor logic into the Leamout runtime.
+
+The shared audio contract supports PCM16 little-endian plus G.711 mu-law and A-law so speech adapters can work with both AI-native and telephony-native audio paths.
+
 The SDK intentionally contains no vendor clients, credentials storage, runtime orchestration, or provider registry. Those concerns belong to `leamout/ai-providers` and the Leamout runtime.
+
+## License
+
+Apache License 2.0.
