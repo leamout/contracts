@@ -1,0 +1,25 @@
+name: Tag v0.1.0
+
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/tag-v0.1.0.yml"]
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create v0.1.0
+        run: |
+          if git rev-parse v0.1.0 >/dev/null 2>&1; then
+            echo "v0.1.0 already exists"
+            exit 0
+          fi
+          git tag -a v0.1.0 c8840137851c9e4b24221e674cede8f9ccfc2f31 -m "Leamout Contracts v0.1.0"
+          git push origin v0.1.0
