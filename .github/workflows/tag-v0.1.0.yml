@@ -21,5 +21,7 @@ jobs:
             echo "v0.1.0 already exists"
             exit 0
           fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag -a v0.1.0 c8840137851c9e4b24221e674cede8f9ccfc2f31 -m "Leamout Contracts v0.1.0"
           git push origin v0.1.0
