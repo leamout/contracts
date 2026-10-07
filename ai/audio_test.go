@@ -7,9 +7,9 @@ import (
 
 func TestAudioFrameDuration(t *testing.T) {
 	tests := []struct {
-		name   string
-		frame  AudioFrame
-		want   time.Duration
+		name  string
+		frame AudioFrame
+		want  time.Duration
 	}{
 		{
 			name: "pcm16 16kHz mono",
